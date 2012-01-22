@@ -1,0 +1,100 @@
+<!doctype html>
+
+<title>When did Dave last smoke?</title>
+<style>
+    body {
+        background: black;
+        color: lime;
+    }
+
+    #since, #cigs, #time, #cost, #tar {
+        font-family: monospace;
+        font-size: 24pt;
+        text-align: center;
+        margin-top: 24pt;
+    }
+</style>
+
+<body>
+
+<div id="since">Last smoke: </div>
+<div id="cost">Savings: &pound;</div>
+<div id="tar">Tar avoided: </div>
+<div id="cigs">Smokes avoided: </div>
+<div id="time">Time saved: </div>
+
+<script>
+    var SEC = 1000;
+    var MIN = SEC * 60;
+    var HOUR = MIN * 60;
+    var DAY = HOUR * 24;
+    var START = 1288490400000;
+
+    var COST_PER_UNIT = 6.55;
+    var QTY_PER_UNIT = 20;
+    var TAR_MG_PER_UNIT = 6 * QTY_PER_UNIT;
+    var NICOTINE_MG_PER_UNIT = 0.5 * QTY_PER_UNIT;
+
+    var UNITS_PER_DAY = 1;
+    var QTY_PER_DAY = UNITS_PER_DAY * QTY_PER_UNIT;
+
+    var MS_PER_SMOKE = 60 * 4 * SEC;
+
+    var COST_PER_MS = (COST_PER_UNIT * UNITS_PER_DAY) / DAY;
+    var TAR_PER_MS = (TAR_MG_PER_UNIT * UNITS_PER_DAY) / DAY;
+    var TIME_PER_MS = (QTY_PER_DAY * MS_PER_SMOKE) / DAY;
+    var CIGS_PER_MS = QTY_PER_DAY / DAY;
+
+    var sinceNode;
+    var costNode;
+    var tarNode;
+    var cigsNode;
+    var timeNode;
+
+    var msToInterval = function(ms) {
+        var s = '';
+        var unit = function(n, ss) {
+            var c = Math.floor(ms / n);
+            ms %= n;
+            s += c;
+            s += ss;
+        }
+
+        unit(DAY, 'd ');
+        unit(HOUR, 'h ');
+        unit(MIN, 'm ');
+
+        var c = Math.floor(ms / SEC);
+        ms %= SEC;
+        s += c;
+        s += '.';
+        s += (''+(1000 + ms)).substring(1);
+        s += 's';
+        return s;
+    };
+
+    var update = function() {
+        var ms = (new Date()).getTime() - START;
+
+        costNode.nodeValue = ('' + (ms * COST_PER_MS)).substring(0, 7);
+        tarNode.nodeValue = ('' + (ms * TAR_PER_MS)).substring(0, 7) + 'mg';
+        sinceNode.nodeValue = msToInterval(ms);
+        timeNode.nodeValue = msToInterval(Math.floor(ms * TIME_PER_MS));
+        cigsNode.nodeValue = Math.floor(ms * CIGS_PER_MS);
+    };
+
+    var makeText = function(id) {
+        var elem = document.getElementById(id);
+        var node = document.createTextNode('');
+        elem.appendChild(node);
+        return node;
+    };
+
+    sinceNode = makeText('since');
+    costNode = makeText('cost');
+    tarNode = makeText('tar');
+    cigsNode = makeText('cigs');
+    timeNode = makeText('time');
+
+    setInterval(update, 1000.0 / 12.5);
+</script>

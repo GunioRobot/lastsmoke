@@ -1,0 +1,11 @@
+application: lastsmoke2
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+
+- url: /
+  static_files: index.html
+  mime_type: text/html; charset=UTF-8
+  upload: index.html
